@@ -1,7 +1,3 @@
-Here's a clean, professional `README.md` for your blog project without code blocks:
-
----
-
 # Daily Blog - Django Blog Project
 
 ## Project Overview

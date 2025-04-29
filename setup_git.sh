@@ -28,21 +28,21 @@ push_with_retry() {
     local branch=$1
     local attempt=1
     local max_attempts=3
-    
+
     while [ $attempt -le $max_attempts ]; do
         echo -e "${YELLOW}Attempt $attempt of $max_attempts: Pushing to ${branch}...${NC}"
         if git push -u origin "$branch"; then
             echo -e "${GREEN}Push to ${branch} successful!${NC}"
             return 0
         fi
-        
+
         ((attempt++))
         if [ $attempt -le $max_attempts ]; then
             echo -e "${YELLOW}Push failed. Retrying in 3 seconds...${NC}"
             sleep 3
         fi
     done
-    
+
     echo -e "${RED}Failed to push after ${max_attempts} attempts.${NC}"
     return 1
 }
@@ -59,21 +59,20 @@ else
     echo -e "${GREEN}Existing Git repository found.${NC}"
 fi
 
-# Improved remote handling
+# Remote handling
 CURRENT_REMOTE=$(git remote get-url origin 2>/dev/null)
-read -p "Enter remote repository URL (e.g., git@github.com:user/repo.git): " REMOTE_URL
 
 if [ -z "$CURRENT_REMOTE" ]; then
+    read -p "Enter remote repository URL (e.g., git@github.com:user/repo.git): " REMOTE_URL
     echo -e "${YELLOW}Setting up new remote repository...${NC}"
     git remote add origin "$REMOTE_URL"
-elif [ "$CURRENT_REMOTE" != "$REMOTE_URL" ]; then
-    echo -e "${YELLOW}Current remote URL:${NC} $CURRENT_REMOTE"
-    echo -e "${YELLOW}New remote URL:${NC} $REMOTE_URL"
-    if prompt_yes_no "Remote URL differs. Do you want to update it?"; then
-        git remote set-url origin "$REMOTE_URL"
-    fi
 else
-    echo -e "${GREEN}Remote already configured with this URL.${NC}"
+    echo -e "${GREEN}Remote already configured: ${CURRENT_REMOTE}${NC}"
+    if prompt_yes_no "Do you want to change the remote URL?"; then
+        read -p "Enter new remote repository URL: " REMOTE_URL
+        git remote set-url origin "$REMOTE_URL"
+        echo -e "${YELLOW}Remote URL updated to:${NC} $REMOTE_URL"
+    fi
 fi
 
 # Get current branch name
@@ -88,17 +87,17 @@ CHANGES_EXIST=$(git status --porcelain)
 if [ -n "$CHANGES_EXIST" ]; then
     echo -e "${YELLOW}The following changes were detected:${NC}"
     git status -s
-    
+
     if prompt_yes_no "Do you want to stage all changes?"; then
         git add .
-        
+
         echo -e "${YELLOW}Staged changes:${NC}"
         git status -s
-        
+
         if prompt_yes_no "Do you want to commit these changes?"; then
             read -p "Enter commit message: " COMMIT_MSG
             git commit -m "$COMMIT_MSG"
-            
+
             # Push with retry logic
             while true; do
                 if push_with_retry "$CURRENT_BRANCH"; then
@@ -127,7 +126,7 @@ if [ -n "$CHANGES_EXIST" ]; then
     fi
 else
     echo -e "${GREEN}No changes detected.${NC}"
-    
+
     if prompt_yes_no "Do you want to pull from remote?"; then
         if ! git pull origin "$CURRENT_BRANCH"; then
             echo -e "${YELLOW}Failed to pull ${CURRENT_BRANCH}. Trying 'main'...${NC}"

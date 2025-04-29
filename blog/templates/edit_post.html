@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Editing: {{ post.title }}{% endblock %}
+{% block page_title %}Editing Post: <em>{{ post.title }}</em>{% endblock %}
+
+{% block content %}
+<div class="edit-form-container">
+    <form method="POST" class="post-form">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="title">Title:</label>
+            <input type="text" name="title" value="{{ post.title }}" class="form-control">
+        </div>
+        
+        <div class="form-group">
+            <label for="body">Content:</label>
+            <textarea name="body" class="form-control">{{ post.body }}</textarea>
+        </div>
+        
+        <button type="submit" class="save-button">Save Changes</button>
+    </form>
+</div>
+{% endblock %}

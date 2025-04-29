@@ -1,69 +1,28 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+{% extends "base.html" %}
 
-        body {
-            font-family: Arial;
-            padding: 20px;
-            background: #f1f1f1;
-        }
+{% block title %}Blog{% endblock %}
 
-        .header {
-            padding: 2px;
-            font-size: 40px;
-            text-align: center;
-            background: white;
-        }
+{% block page_title %}
+<div class="hero-title">
+    <span class="blog-daily">Blog Daily</span>
+    <div class="subtitle">Fresh thoughts every day</div>
+</div>
+{% endblock %}
 
-        .leftcolumn {   
-            float: left;
-            width: 100%;
-        }
-
-        .card {
-            background-color: white;
-            padding: 20px;
-            margin-top: 20px;
-        }
-
-        .row:after {
-            content: "";
-            display: table;
-            clear: both;
-        }
-
-        @media screen and (max-width: 800px) {
-            .leftcolumn, .rightcolumn {   
-                width: 100%;
-                padding: 0;
-            }
-        }
-    </style>
-</head>
-<body>
-
-    <div class="header">
-        <h2>Tomi's Blog</h2>
-    </div>
-
-    <div class="row">
-        <div class="leftcolumn">
-            {% for post in posts reversed %}
-            <div class="card">
-                <a style="text-decoration: none; color: black;" href="/post/{{post.id}}">
-                    <h2>{{post.title}}</h2>
-                    <h5>{{post.created_at}}</h5>
-                    <p>{{post.body|truncatewords:20}}</p>
-                </a>
+{% block content %}
+<div class="posts-container">
+    {% for post in posts %}
+    <div class="post-card card">
+        <a href="{% url 'post' post.id %}" class="post-link">
+            <h2>{{ post.title }}</h2>
+            <div class="post-meta">
+                <span class="post-date">{{ post.created_at|date:"F j, Y" }}</span>
             </div>
-            {% endfor %}
-        </div> 
+            <div class="post-excerpt">
+                {{ post.body|truncatewords:30 }}
+            </div>
+        </a>
     </div>
-
-</body>
-</html>
+    {% endfor %}
+</div>
+{% endblock %}

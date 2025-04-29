@@ -1,63 +1,23 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+{% extends "base.html" %}
 
-        body {
-            font-family: Arial;
-            padding: 20px;
-            background: #f1f1f1;
-        }
+{% block title %}{{ post.title }} - Blog{% endblock %}
 
-        .header {
-            padding: 2px;
-            font-size: 40px;
-            text-align: center;
-            background: white;
-        }
-
-        .leftcolumn {   
-            float: left;
-            width: 100%;
-        }
-
-        .card {
-            background-color: white;
-            padding: 20px;
-            margin-top: 20px;
-        }
-
-        .row:after {
-            content: "";
-            display: table;
-            clear: both;
-        }
-
-        @media screen and (max-width: 800px) {
-            .leftcolumn, .rightcolumn {   
-                width: 100%;
-                padding: 0;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h2>Tomi's Blog</h2>
+{% block page_title %}
+<div class="post-hero">
+    <h1 class="post-title">{{ post.title }}</h1>
+    <div class="post-meta">
+        <span class="post-date">{{ post.created_at|date:"F j, Y" }}</span>
+        {% if show_edit %}
+        <a href="{% url 'edit_post' post.id %}" class="edit-badge">✏️ Edit</a>
+        {% endif %}
     </div>
+</div>
+{% endblock %}
 
-    <div class="row">
-        <div class="leftcolumn">
-            <div class="card">
-                <h1>{{posts.title}}</h1>
-                <h5>{{posts.created_at}}</h5>
-                <p>{{posts.body}}</p>
-            </div>
-        </div>
+{% block content %}
+<div class="card">
+    <div class="markdown-content">
+        {{ html_content }}
     </div>
-</body>
-</html>
+</div>
+{% endblock %}

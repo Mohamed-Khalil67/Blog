@@ -4,10 +4,11 @@ import base64
 from .models import Post
 import markdown
 from django.utils.safestring import mark_safe
+from decouple import config
 
-# Basic authentication credentials
-EDIT_USERNAME = "admin"
-EDIT_PASSWORD = "admin123"  # Change this!
+EDIT_USERNAME = config('EDIT_USERNAME')
+EDIT_PASSWORD = config('EDIT_PASSWORD')
+
 
 def index(request):
     posts = Post.objects.all().order_by('-created_at')
@@ -19,7 +20,7 @@ def post(request, pk):
     return render(request, 'posts.html', {
         'post': post,
         'html_content': mark_safe(html_content),
-        'show_edit': request.GET.get('edit_key') == "admin123"
+        'show_edit': request.GET.get('edit_key') == str(EDIT_PASSWORD)
     })
 
 def edit_post(request, pk):
